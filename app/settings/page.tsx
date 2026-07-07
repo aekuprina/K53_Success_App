@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useAppState, setState, resetState } from "@/lib/store";
+import { LANGS } from "@/lib/i18n";
 
 export default function Settings() {
   const state = useAppState();
@@ -53,10 +54,24 @@ export default function Settings() {
         </div>
 
         <div>
-          <label className="mb-1 block font-medium">Language</label>
-          <select disabled className="w-full rounded-xl border-2 border-ink-300 bg-white px-4 py-3 opacity-60 dark:border-slate-700 dark:bg-slate-900">
-            <option>English (Afrikaans, isiZulu &amp; isiXhosa coming soon)</option>
-          </select>
+          <label className="mb-1 block font-medium">Explanation language</label>
+          <div className="grid grid-cols-2 gap-2">
+            {LANGS.map((l) => (
+              <button
+                key={l.id}
+                onClick={() => setState({ lang: l.id })}
+                className={`rounded-xl border-2 px-3 py-2 font-semibold ${
+                  state.lang === l.id ? "border-brand-500 bg-brand-50 dark:bg-brand-900/30" : "border-ink-300 dark:border-slate-700"
+                }`}
+              >
+                {l.native}
+              </button>
+            ))}
+          </div>
+          <p className="mt-1 text-xs text-ink-500 dark:text-slate-400">
+            Questions stay in English — the real test is in English. Hints and explanations switch to your language.
+            {(state.lang === "zu" || state.lang === "xh") && " isiZulu/isiXhosa are community translations — tell us if something reads wrong."}
+          </p>
         </div>
       </div>
 

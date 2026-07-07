@@ -23,6 +23,7 @@ export interface AppState {
   code: "1" | "8" | "10";
   examDate?: string;
   dark: boolean;
+  lang: "en" | "af" | "zu" | "xh";
   stats: Record<string, QStat>;
   mistakes: string[];
   bookmarks: string[];
@@ -35,6 +36,7 @@ const DEFAULT_STATE: AppState = {
   onboarded: false,
   code: "8",
   dark: false,
+  lang: "en",
   stats: {},
   mistakes: [],
   bookmarks: [],

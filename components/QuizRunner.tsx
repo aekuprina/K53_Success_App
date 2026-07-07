@@ -4,6 +4,7 @@ import { useState } from "react";
 import { ShuffledQuestion } from "@/lib/quiz";
 import { recordAnswer, toggleBookmark, useAppState } from "@/lib/store";
 import { topicById } from "@/data/topics";
+import { getTr } from "@/lib/i18n";
 
 interface Props {
   items: ShuffledQuestion[];
@@ -21,6 +22,7 @@ export function QuizRunner({ items, onDone }: Props) {
   const item = items[i];
   const answered = picked !== null;
   const bookmarked = state.bookmarks.includes(item.q.id);
+  const tr = getTr(state.lang, item.q.id);
 
   function pick(idx: number) {
     if (answered) return;
@@ -53,7 +55,10 @@ export function QuizRunner({ items, onDone }: Props) {
 
       <div className="card space-y-4">
         <div className="flex items-start justify-between gap-2">
-          <h2 className="text-lg font-semibold leading-snug">{item.q.q}</h2>
+          <div>
+            <h2 className="text-lg font-semibold leading-snug">{item.q.q}</h2>
+            {tr?.q && <p className="mt-1 text-sm italic text-ink-500 dark:text-slate-400">{tr.q}</p>}
+          </div>
           <button
             aria-label={bookmarked ? "Remove bookmark" : "Bookmark this question"}
             onClick={() => toggleBookmark(item.q.id)}
@@ -90,7 +95,14 @@ export function QuizRunner({ items, onDone }: Props) {
             }`}
           >
             <p className="font-semibold">{picked === item.answerIndex ? "Correct!" : "Not quite."}</p>
-            <p className="mt-1">{item.q.explain}</p>
+            {tr ? (
+              <>
+                <p className="mt-1">{tr.explain}</p>
+                <p className="mt-1 text-xs opacity-70">{item.q.explain}</p>
+              </>
+            ) : (
+              <p className="mt-1">{item.q.explain}</p>
+            )}
             {item.q.rule && <p className="mt-1 text-xs opacity-70">Reference: {item.q.rule}</p>}
           </div>
         )}

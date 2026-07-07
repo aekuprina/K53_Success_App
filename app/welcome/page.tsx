@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { setState } from "@/lib/store";
+import { setState, useAppState } from "@/lib/store";
+import { LANGS } from "@/lib/i18n";
 
 const CODES = [
   { id: "1", name: "Code 1", desc: "Motorcycles" },
@@ -12,6 +13,7 @@ const CODES = [
 
 export default function Welcome() {
   const router = useRouter();
+  const state = useAppState();
   const [code, setCode] = useState<"1" | "8" | "10">("8");
   const [examDate, setExamDate] = useState("");
 
@@ -28,6 +30,24 @@ export default function Welcome() {
         <p className="mt-2 text-ink-500 dark:text-slate-400">
           Built for South Africa&apos;s new computerised test. No registration, works offline.
         </p>
+      </div>
+
+      <div className="card space-y-2">
+        <h2 className="font-semibold">Explanations in your language</h2>
+        <div className="flex flex-wrap gap-2">
+          {LANGS.map((l) => (
+            <button
+              key={l.id}
+              onClick={() => setState({ lang: l.id })}
+              className={`rounded-full px-3 py-1.5 text-sm font-semibold ${
+                state.lang === l.id ? "bg-brand-600 text-white" : "bg-ink-100 dark:bg-slate-800"
+              }`}
+            >
+              {l.native}
+            </button>
+          ))}
+        </div>
+        <p className="text-xs text-ink-500 dark:text-slate-400">Questions stay in English, like the real test.</p>
       </div>
 
       <div className="card space-y-3">

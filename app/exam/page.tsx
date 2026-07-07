@@ -3,12 +3,14 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { buildMockExam, scoreMock, ShuffledQuestion, MockOutcome } from "@/lib/quiz";
-import { addMockResult, recordAnswer } from "@/lib/store";
+import { addMockResult, recordAnswer, useAppState } from "@/lib/store";
+import { getTr } from "@/lib/i18n";
 import { BLOCK_META, EXAM_MINUTES, EXAM_TOTAL } from "@/data/topics";
 
 type Phase = "intro" | "running" | "results";
 
 export default function MockExam() {
+  const appState = useAppState();
   const [phase, setPhase] = useState<Phase>("intro");
   const [items, setItems] = useState<ShuffledQuestion[]>([]);
   const [answers, setAnswers] = useState<(number | null)[]>([]);
@@ -127,7 +129,7 @@ export default function MockExam() {
                 {answers[idx] !== null && <p className="mt-1 text-red-500">Your answer: {item.options[answers[idx]!]}</p>}
                 {answers[idx] === null && <p className="mt-1 text-red-500">Not answered</p>}
                 <p className="text-brand-600">Correct: {item.options[item.answerIndex]}</p>
-                <p className="mt-1 text-ink-500 dark:text-slate-400">{item.q.explain}</p>
+                <p className="mt-1 text-ink-500 dark:text-slate-400">{getTr(appState.lang, item.q.id)?.explain ?? item.q.explain}</p>
               </div>
             ))}
           </div>

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useAppState } from "@/lib/store";
+import { useAppState, getState } from "@/lib/store";
 import { computeReadiness, readinessLabel } from "@/lib/readiness";
 import { EXAM_TOTAL } from "@/data/topics";
 
@@ -13,12 +13,14 @@ export default function Home() {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    if (!state.onboarded) {
+    // Read the store directly: the hydration snapshot may still hold the
+    // server default (onboarded=false) when this effect first runs.
+    if (!getState().onboarded) {
       router.replace("/welcome/");
     } else {
       setReady(true);
     }
-  }, [state.onboarded, router]);
+  }, [router]);
 
   if (!ready) return null;
 

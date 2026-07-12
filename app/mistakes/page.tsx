@@ -14,8 +14,8 @@ export default function Mistakes() {
 
   if (session && done === null) {
     return (
-      <div className="space-y-4">
-        <button className="text-sm font-medium text-brand-600" onClick={() => setSession(null)}>← Stop session</button>
+      <div className="px-6 pt-4">
+        <button className="mb-4 text-[15px] font-bold text-accent" onClick={() => setSession(null)}>← Stop session</button>
         <QuizRunner items={session} onDone={setDone} />
       </div>
     );
@@ -23,12 +23,16 @@ export default function Mistakes() {
 
   if (session && done !== null) {
     return (
-      <div className="flex min-h-[70vh] flex-col items-center justify-center space-y-4 text-center">
-        <div className="text-5xl">🔁</div>
-        <h1 className="text-2xl font-bold">{done}/{session.length} fixed</h1>
-        <p className="text-ink-500 dark:text-slate-400">Answer a question correctly twice in a row and it leaves the queue.</p>
-        <div className="flex w-full max-w-xs flex-col gap-2">
-          <button className="btn-primary" onClick={() => { setSession(null); setDone(null); }}>Back to queue</button>
+      <div className="flex min-h-[80vh] animate-screenIn flex-col items-center justify-center px-6 text-center">
+        <div className="font-display text-[96px] font-bold leading-none">
+          {done}<span className="text-[28px] text-accent">/{session.length}</span>
+        </div>
+        <h1 className="h-display mt-3 text-[26px]">Fixed</h1>
+        <p className="mt-2 max-w-[290px] text-sm font-medium text-muted">
+          Answer a question correctly twice in a row and it leaves the queue.
+        </p>
+        <div className="mt-8 flex w-full max-w-xs flex-col gap-2.5">
+          <button className="btn-primary text-[17px]" onClick={() => { setSession(null); setDone(null); }}>Back to queue</button>
           <Link href="/" className="btn-ghost">Home</Link>
         </div>
       </div>
@@ -38,43 +42,50 @@ export default function Mistakes() {
   const bookmarkedQs = state.bookmarks.map((id) => BANK_BY_ID.get(id)).filter(Boolean);
 
   return (
-    <div className="space-y-5">
-      <header>
-        <h1 className="text-2xl font-bold">Fix mistakes</h1>
-        <p className="text-sm text-ink-500 dark:text-slate-400">Your personal queue — the fastest way to raise your Readiness Score.</p>
-      </header>
+    <div className="animate-screenIn px-6 pt-4">
+      <h1 className="h-display text-[28px]">Fix mistakes</h1>
+      <p className="mt-1 text-sm font-medium text-muted">Your personal queue — the fastest way to raise your Readiness Score.</p>
 
-      <div className="card space-y-3">
-        <div className="flex items-center justify-between">
-          <h2 className="font-semibold">Mistake queue</h2>
-          <span className="rounded-full bg-red-100 px-2.5 py-0.5 text-sm font-bold text-red-600 dark:bg-red-900/30">{state.mistakes.length}</span>
+      <div className="mt-5 rounded-[24px] bg-hero p-6 text-heroink">
+        <div className="flex items-start justify-between">
+          <div>
+            <div className="text-[10.5px] font-bold uppercase tracking-[0.16em] text-accent">Mistake queue</div>
+            <div className="mt-2 font-display text-[64px] font-bold leading-[0.85]">{state.mistakes.length}</div>
+            <div className="mt-1.5 text-[12.5px] font-medium text-heromut">
+              {state.mistakes.length === 0
+                ? "Nothing here — mistakes land in this queue automatically."
+                : "waiting for you"}
+            </div>
+          </div>
         </div>
-        {state.mistakes.length === 0 ? (
-          <p className="text-sm text-ink-500 dark:text-slate-400">Nothing here — mistakes from practice and mock exams land in this queue automatically.</p>
-        ) : (
-          <button className="btn-primary w-full" onClick={() => { setDone(null); setSession(buildMistakesSession(getState())); }}>
+        {state.mistakes.length > 0 && (
+          <button
+            className="btn-primary mt-5 w-full text-[16px]"
+            onClick={() => { setDone(null); setSession(buildMistakesSession(getState())); }}
+          >
             Practise {Math.min(state.mistakes.length, 15)} mistakes
           </button>
         )}
       </div>
 
-      <div className="card space-y-3">
-        <div className="flex items-center justify-between">
-          <h2 className="font-semibold">Bookmarked questions</h2>
-          <span className="rounded-full bg-amber-100 px-2.5 py-0.5 text-sm font-bold text-amber-600 dark:bg-amber-900/30">{bookmarkedQs.length}</span>
+      <div className="tile mt-4 flex items-center gap-3.5">
+        <svg viewBox="0 0 24 24" className="h-[22px] w-[22px] flex-none" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinejoin="round"><path d="M6 3h12v18l-6-4-6 4z" /></svg>
+        <div className="flex-1">
+          <div className="font-semibold">Bookmarked questions</div>
+          <div className="mt-0.5 text-xs font-medium text-muted">
+            {bookmarkedQs.length ? `${bookmarkedQs.length} saved` : "Tap the bookmark icon on any question"}
+          </div>
         </div>
-        {bookmarkedQs.length === 0 ? (
-          <p className="text-sm text-ink-500 dark:text-slate-400">Tap the bookmark icon on any question to save it here.</p>
-        ) : (
+        {bookmarkedQs.length > 0 && (
           <button
-            className="btn-ghost w-full"
+            className="text-sm font-bold text-accent"
             onClick={() => {
               const salt = Date.now() & 0xffff;
               setDone(null);
               setSession(bookmarkedQs.map((q) => shuffleOptions(q!, salt)));
             }}
           >
-            Practise bookmarks
+            Practise →
           </button>
         )}
       </div>

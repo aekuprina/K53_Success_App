@@ -1,16 +1,45 @@
 import type { Config } from "tailwindcss";
+
+// Ultramarine design system — tokens live as CSS variables in globals.css
 const config: Config = {
   content: ["./app/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}", "./lib/**/*.{ts,tsx}", "./data/**/*.{ts,tsx}"],
   darkMode: "class",
   theme: {
     extend: {
       colors: {
-        brand: { 50:"#eefbf4",100:"#d6f5e3",200:"#b0eaca",300:"#7cd9ab",400:"#46c188",500:"#22a76e",600:"#158758",700:"#116c48",800:"#10563b",900:"#0e4732" },
-        ink: { 900:"#0f172a", 700:"#334155", 500:"#64748b", 300:"#cbd5e1", 100:"#f1f5f9" }
+        ground: "var(--ground)",
+        card: "var(--card)",
+        ink: "var(--ink)",
+        muted: "var(--muted)",
+        line: "var(--line)",
+        hero: "var(--hero)",
+        heroink: "var(--heroInk)",
+        heromut: "var(--heroMut)",
+        accent: "var(--accent)",
+        accentink: "var(--accentInk)",
+        ok: "var(--ok)",
+        bad: "var(--bad)",
+        soft: "var(--soft)",
       },
-      fontFamily: { sans: ["system-ui","-apple-system","Segoe UI","Roboto","Helvetica","Arial","sans-serif"] }
-    }
+      fontFamily: {
+        sans: ["Archivo", "system-ui", "-apple-system", "Segoe UI", "Roboto", "sans-serif"],
+        display: ["Oswald", "Archivo Narrow", "Arial Narrow", "system-ui", "sans-serif"],
+      },
+      borderRadius: {
+        tile: "16px",
+        card: "22px",
+        hero: "30px",
+      },
+      keyframes: {
+        screenIn: { from: { opacity: "0", transform: "translateY(8px)" }, to: { opacity: "1", transform: "none" } },
+        sheetUp: { from: { opacity: "0", transform: "translateY(24px)" }, to: { opacity: "1", transform: "none" } },
+      },
+      animation: {
+        screenIn: "screenIn .26s ease both",
+        sheetUp: "sheetUp .3s ease both",
+      },
+    },
   },
-  plugins: []
+  plugins: [],
 };
 export default config;

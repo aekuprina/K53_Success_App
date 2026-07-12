@@ -24,16 +24,16 @@ function SessionInner() {
   if (done !== null) {
     const pct = Math.round((done / items.length) * 100);
     return (
-      <div className="flex min-h-[70vh] flex-col items-center justify-center space-y-4 text-center">
-        <div className="text-5xl">{pct >= 75 ? "🎉" : pct >= 50 ? "💪" : "📚"}</div>
-        <h1 className="text-2xl font-bold">
-          {done}/{items.length} correct
-        </h1>
-        <p className="text-ink-500 dark:text-slate-400">
-          {pct >= 75 ? "Strong work — keep this topic warm." : "Mistakes go to your Fix-mistakes queue automatically."}
+      <div className="flex min-h-[80vh] animate-screenIn flex-col items-center justify-center px-6 text-center">
+        <div className="font-display text-[96px] font-bold leading-none">
+          {done}<span className="text-[28px] text-accent">/{items.length}</span>
+        </div>
+        <h1 className="h-display mt-3 text-[26px]">{pct >= 75 ? "Strong work" : "Keep going"}</h1>
+        <p className="mt-2 max-w-[290px] text-sm font-medium text-muted">
+          {pct >= 75 ? "Keep this topic warm until exam day." : "Mistakes go to your Fix-mistakes queue automatically."}
         </p>
-        <div className="flex w-full max-w-xs flex-col gap-2">
-          <button className="btn-primary" onClick={() => { setDone(null); setRunId((x) => x + 1); }}>
+        <div className="mt-8 flex w-full max-w-xs flex-col gap-2.5">
+          <button className="btn-primary text-[17px]" onClick={() => { setDone(null); setRunId((x) => x + 1); }}>
             Practise again
           </button>
           <Link href="/practice/" className="btn-ghost">Other topics</Link>
@@ -44,10 +44,10 @@ function SessionInner() {
   }
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <Link href="/practice/" className="text-sm font-medium text-brand-600">← Topics</Link>
-        <h1 className="text-sm font-semibold">{t?.name}</h1>
+    <div className="px-6 pt-4">
+      <div className="mb-4 flex items-center justify-between">
+        <Link href="/practice/" className="text-[15px] font-bold text-accent">← Practice</Link>
+        <h1 className="h-display text-lg">{t?.name}</h1>
       </div>
       <QuizRunner items={items} onDone={setDone} />
     </div>

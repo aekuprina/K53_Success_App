@@ -5,12 +5,13 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAppState } from "@/lib/store";
 
+// Icons from the Ultramarine prototype (21px, stroke 1.9)
 const NAV = [
-  { href: "/", label: "Home", icon: "M3 11.5 12 4l9 7.5M5.5 10v9h13v-9" },
-  { href: "/practice/", label: "Practice", icon: "M4 6h16M4 12h16M4 18h10" },
-  { href: "/exam/", label: "Mock exam", icon: "M7 3h10v18H7zM10 7h4" },
-  { href: "/signs/", label: "Signs", icon: "M12 3l9 9-9 9-9-9z" },
-  { href: "/settings/", label: "More", icon: "M12 8a4 4 0 100 8 4 4 0 000-8zM4 12h2m12 0h2M12 4v2m0 12v2" },
+  { href: "/", label: "Home", icon: <><path d="M3 10.5 12 4l9 6.5" /><path d="M5.5 9.5V20h13V9.5" /></> },
+  { href: "/practice/", label: "Practice", icon: <path d="M4 7h16M4 12h16M4 17h16" /> },
+  { href: "/exam/", label: "Mock exam", icon: <rect x="6" y="3" width="12" height="18" rx="2.5" /> },
+  { href: "/signs/", label: "Signs", icon: <rect x="12" y="3" width="12.7" height="12.7" rx="2" transform="rotate(45 12 3)" /> },
+  { href: "/settings/", label: "More", icon: <><circle cx="12" cy="12" r="3.4" /><path d="M12 3.5v3.4M12 17.1V20.5M3.5 12h3.4M17.1 12H20.5" /></> },
 ];
 
 export function ClientShell({ children }: { children: React.ReactNode }) {
@@ -31,22 +32,22 @@ export function ClientShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="mx-auto flex min-h-screen max-w-lg flex-col">
-      <main className="flex-1 px-4 pb-24 pt-4">{children}</main>
+      <main className={`flex-1 ${inQuiz ? "pb-6" : "pb-24"}`}>{children}</main>
       {!inQuiz && (
-        <nav className="fixed inset-x-0 bottom-0 z-20 border-t border-ink-300/40 bg-white/95 backdrop-blur dark:border-slate-800 dark:bg-slate-900/95">
-          <div className="mx-auto flex max-w-lg justify-around">
+        <nav className="fixed inset-x-0 bottom-0 z-20 border-t border-line bg-ground/95 backdrop-blur">
+          <div className="mx-auto flex max-w-lg px-3 pb-5 pt-3">
             {NAV.map((item) => {
               const active = item.href === "/" ? pathname === "/" : pathname?.startsWith(item.href.replace(/\/$/, ""));
               return (
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`flex flex-col items-center gap-0.5 px-3 py-2 text-[11px] font-medium ${
-                    active ? "text-brand-600" : "text-ink-500 dark:text-slate-400"
+                  className={`flex flex-1 flex-col items-center gap-[5px] text-[9.5px] font-bold tracking-[0.04em] ${
+                    active ? "text-accent" : "text-muted"
                   }`}
                 >
-                  <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                    <path d={item.icon} />
+                  <svg viewBox="0 0 24 24" className="h-[21px] w-[21px]" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+                    {item.icon}
                   </svg>
                   {item.label}
                 </Link>

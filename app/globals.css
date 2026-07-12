@@ -2,38 +2,92 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Ultramarine design tokens — from the approved Claude design prototype */
+:root {
+  --ground: #f2f3f4;
+  --card: #ffffff;
+  --ink: #020035;
+  --muted: #7a7a92;
+  --line: rgba(2, 0, 53, 0.13);
+  --hero: #020035;
+  --heroInk: #eeeef4;
+  --heroMut: #9f9fc0;
+  --accent: #ed4b00;
+  --accentInk: #fff3ee;
+  --ok: #1f8a5b;
+  --bad: #e03a1c;
+  --soft: rgba(2, 0, 53, 0.045);
+  --okSoft: rgba(31, 138, 91, 0.1);
+  --badSoft: rgba(224, 58, 28, 0.09);
+}
+
+.dark {
+  --ground: #0b0a1e;
+  --card: #161436;
+  --ink: #eeeef4;
+  --muted: #9a9ab8;
+  --line: rgba(255, 255, 255, 0.13);
+  --hero: #04023a;
+  --heroInk: #eeeef4;
+  --heroMut: #9f9fc0;
+  --accent: #ed4b00;
+  --accentInk: #fff3ee;
+  --ok: #3fb985;
+  --bad: #f26552;
+  --soft: rgba(255, 255, 255, 0.07);
+  --okSoft: rgba(63, 185, 133, 0.14);
+  --badSoft: rgba(242, 101, 82, 0.12);
+}
+
 html {
   -webkit-tap-highlight-color: transparent;
 }
 
 body {
-  @apply bg-ink-100 text-ink-900 antialiased;
+  @apply bg-ground text-ink antialiased font-sans;
 }
 
-.dark body {
-  @apply bg-slate-950 text-slate-100;
+/* Headline utility: Oswald condensed uppercase */
+.h-display {
+  @apply font-display font-bold uppercase;
+}
+
+.caps-label {
+  @apply font-sans font-semibold text-[11px] tracking-[0.16em] uppercase text-muted;
 }
 
 .card {
-  @apply rounded-2xl bg-white p-4 shadow-sm dark:bg-slate-900 dark:shadow-none dark:ring-1 dark:ring-slate-800;
+  @apply rounded-card bg-card p-5;
 }
 
 .btn {
-  @apply inline-flex items-center justify-center rounded-xl px-5 py-3 font-semibold transition active:scale-[0.98] disabled:opacity-40;
+  @apply inline-flex items-center justify-center rounded-tile px-5 py-3.5 font-bold transition active:scale-[0.98] disabled:opacity-40;
 }
 
 .btn-primary {
-  @apply btn bg-brand-600 text-white hover:bg-brand-700;
+  @apply btn bg-accent text-accentink;
 }
 
 .btn-ghost {
-  @apply btn bg-ink-100 text-ink-900 hover:bg-ink-300/50 dark:bg-slate-800 dark:text-slate-100 dark:hover:bg-slate-700;
+  @apply btn border-[1.5px] border-line bg-card text-ink;
 }
 
 .option-btn {
-  @apply w-full rounded-xl border-2 border-ink-300 bg-white px-4 py-3 text-left font-medium transition dark:border-slate-700 dark:bg-slate-900;
+  @apply flex w-full items-center gap-3.5 rounded-tile border-[1.5px] border-line bg-card px-4 py-3.5 text-left font-medium text-ink transition;
 }
 
-.option-btn:not(:disabled):hover {
-  @apply border-brand-400;
+.option-chip {
+  @apply flex h-[30px] w-[30px] flex-none items-center justify-center rounded-full border-[1.5px] border-line font-display text-sm font-bold text-muted;
+}
+
+.tile {
+  @apply rounded-tile border-[1.5px] border-line p-4;
+}
+
+.bg-ok-soft {
+  background: var(--okSoft);
+}
+
+.bg-bad-soft {
+  background: var(--badSoft);
 }

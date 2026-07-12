@@ -16,24 +16,25 @@ export default function SignsLibrary() {
   });
 
   return (
-    <div className="space-y-4">
-      <header>
-        <h1 className="text-2xl font-bold">Road signs</h1>
-        <p className="text-sm text-ink-500 dark:text-slate-400">{SIGNS.length} signs, offline, growing every release.</p>
-      </header>
+    <div className="animate-screenIn px-6 pt-4">
+      <h1 className="h-display text-[28px]">Road signs</h1>
+      <p className="mt-1 text-sm font-medium text-muted">{SIGNS.length} signs · offline · growing every release</p>
 
-      <input
-        type="search"
-        placeholder="Search signs… e.g. yield, speed, animals"
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-        className="w-full rounded-xl border-2 border-ink-300 bg-white px-4 py-3 dark:border-slate-700 dark:bg-slate-900"
-      />
+      <div className="mt-4 flex items-center gap-2.5 rounded-tile border-[1.5px] border-line bg-card px-4">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" className="flex-none text-muted"><circle cx="11" cy="11" r="7" /><path d="M20 20l-4-4" /></svg>
+        <input
+          type="search"
+          placeholder={`Search all ${SIGNS.length} signs`}
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          className="w-full bg-transparent py-3.5 font-medium outline-none placeholder:text-muted"
+        />
+      </div>
 
-      <div className="flex flex-wrap gap-2">
+      <div className="mt-3 flex flex-wrap gap-2">
         <button
           onClick={() => setCat(null)}
-          className={`rounded-full px-3 py-1.5 text-xs font-semibold ${cat === null ? "bg-brand-600 text-white" : "bg-ink-100 dark:bg-slate-800"}`}
+          className={`rounded-full px-3.5 py-2 text-xs font-bold ${cat === null ? "bg-ink text-ground" : "border-[1.5px] border-line text-muted"}`}
         >
           All
         </button>
@@ -41,22 +42,22 @@ export default function SignsLibrary() {
           <button
             key={c.id}
             onClick={() => setCat(cat === c.id ? null : c.id)}
-            className={`rounded-full px-3 py-1.5 text-xs font-semibold ${cat === c.id ? "bg-brand-600 text-white" : "bg-ink-100 dark:bg-slate-800"}`}
+            className={`rounded-full px-3.5 py-2 text-xs font-bold ${cat === c.id ? "bg-ink text-ground" : "border-[1.5px] border-line text-muted"}`}
           >
-            {c.name}
+            {c.name.replace(" signs", "")}
           </button>
         ))}
       </div>
 
-      <div className="grid grid-cols-2 gap-3">
+      <div className="mt-4 grid grid-cols-2 gap-3">
         {list.map((s) => (
-          <Link key={s.id} href={`/signs/${s.id}/`} className="card flex flex-col items-center gap-2 text-center">
-            <SignSvg spec={s} size={64} />
+          <Link key={s.id} href={`/signs/${s.id}/`} className="flex flex-col items-center gap-2.5 rounded-tile bg-card p-4 text-center">
+            <SignSvg spec={s} size={62} />
             <span className="text-sm font-semibold leading-tight">{s.name}</span>
           </Link>
         ))}
       </div>
-      {list.length === 0 && <p className="text-center text-sm text-ink-500 dark:text-slate-400">No signs match your search.</p>}
+      {list.length === 0 && <p className="pt-6 text-center text-sm font-medium text-muted">No signs match your search.</p>}
     </div>
   );
 }

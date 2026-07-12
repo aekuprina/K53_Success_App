@@ -1,4 +1,12 @@
 import type { Metadata, Viewport } from "next";
+import "@fontsource/archivo/latin-400.css";
+import "@fontsource/archivo/latin-500.css";
+import "@fontsource/archivo/latin-600.css";
+import "@fontsource/archivo/latin-700.css";
+import "@fontsource/archivo/latin-800.css";
+import "@fontsource/oswald/latin-500.css";
+import "@fontsource/oswald/latin-600.css";
+import "@fontsource/oswald/latin-700.css";
 import "./globals.css";
 import { ClientShell } from "@/components/ClientShell";
 
@@ -20,7 +28,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#158758",
+  themeColor: "#020035",
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,

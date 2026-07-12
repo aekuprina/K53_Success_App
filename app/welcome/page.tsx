@@ -23,67 +23,73 @@ export default function Welcome() {
   }
 
   return (
-    <div className="flex min-h-[80vh] flex-col justify-center space-y-6">
-      <div className="text-center">
-        <div className="mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-2xl bg-brand-600 text-3xl">✅</div>
-        <h1 className="text-3xl font-extrabold">Pass your K53 first time</h1>
-        <p className="mt-2 text-ink-500 dark:text-slate-400">
+    <div className="animate-screenIn">
+      {/* Hero */}
+      <div className="rounded-b-hero bg-hero px-6 pb-8 pt-5 text-heroink">
+        <span className="text-[13px] font-extrabold tracking-[0.18em]">K53 SUCCESS</span>
+        <h1 className="h-display mt-6 text-[44px] leading-[0.95]">
+          Pass your K53<br />
+          <span className="text-accent">first time</span>
+        </h1>
+        <p className="mt-4 max-w-[300px] text-[15px] font-medium leading-relaxed text-heromut">
           Built for South Africa&apos;s new computerised test. No registration, works offline.
         </p>
       </div>
 
-      <div className="card space-y-2">
-        <h2 className="font-semibold">Explanations in your language</h2>
-        <div className="flex flex-wrap gap-2">
-          {LANGS.map((l) => (
-            <button
-              key={l.id}
-              onClick={() => setState({ lang: l.id })}
-              className={`rounded-full px-3 py-1.5 text-sm font-semibold ${
-                state.lang === l.id ? "bg-brand-600 text-white" : "bg-ink-100 dark:bg-slate-800"
-              }`}
-            >
-              {l.native}
-            </button>
-          ))}
+      <div className="px-6">
+        <div className="pt-7">
+          <div className="caps-label mb-2.5">Explanations in your language</div>
+          <div className="flex flex-wrap gap-2">
+            {LANGS.map((l) => (
+              <button
+                key={l.id}
+                onClick={() => setState({ lang: l.id })}
+                className={`rounded-full px-3.5 py-2 text-[13px] font-bold ${
+                  state.lang === l.id ? "bg-ink text-ground" : "border-[1.5px] border-line text-muted"
+                }`}
+              >
+                {l.native}
+              </button>
+            ))}
+          </div>
+          <p className="mt-2 text-xs font-medium text-muted">Questions stay in English, like the real test.</p>
         </div>
-        <p className="text-xs text-ink-500 dark:text-slate-400">Questions stay in English, like the real test.</p>
-      </div>
 
-      <div className="card space-y-3">
-        <h2 className="font-semibold">Which licence are you going for?</h2>
-        <div className="space-y-2">
-          {CODES.map((c) => (
-            <button
-              key={c.id}
-              onClick={() => setCode(c.id)}
-              className={`option-btn flex justify-between ${code === c.id ? "!border-brand-500 !bg-brand-50 dark:!bg-brand-900/30" : ""}`}
-            >
-              <span>{c.name}</span>
-              <span className="text-sm text-ink-500 dark:text-slate-400">{c.desc}</span>
-            </button>
-          ))}
+        <div className="pt-6">
+          <div className="caps-label mb-2.5">Which licence are you going for?</div>
+          <div className="space-y-2.5">
+            {CODES.map((c) => (
+              <button
+                key={c.id}
+                onClick={() => setCode(c.id)}
+                className={`option-btn justify-between ${code === c.id ? "!border-2 !border-accent bg-soft" : ""}`}
+              >
+                <span className="font-bold">{c.name}</span>
+                <span className="text-sm font-medium text-muted">{c.desc}</span>
+              </button>
+            ))}
+          </div>
+          <p className="mt-2 text-xs font-medium text-muted">Question bank currently focuses on Code 8. More codes are coming.</p>
         </div>
-        <p className="text-xs text-ink-500 dark:text-slate-400">Question bank currently focuses on Code 8. More codes are coming.</p>
-      </div>
 
-      <div className="card space-y-2">
-        <h2 className="font-semibold">When is your test? (optional)</h2>
-        <input
-          type="date"
-          value={examDate}
-          onChange={(e) => setExamDate(e.target.value)}
-          className="w-full rounded-xl border-2 border-ink-300 bg-white px-4 py-3 dark:border-slate-700 dark:bg-slate-900"
-        />
-        <p className="text-xs text-ink-500 dark:text-slate-400">We&apos;ll build your countdown and daily plan around it.</p>
-      </div>
+        <div className="pt-6">
+          <div className="caps-label mb-2.5">When is your test? (optional)</div>
+          <input
+            type="date"
+            value={examDate}
+            onChange={(e) => setExamDate(e.target.value)}
+            className="w-full rounded-tile border-[1.5px] border-line bg-card px-4 py-3.5 font-medium outline-none"
+          />
+          <p className="mt-2 text-xs font-medium text-muted">We&apos;ll build your countdown and daily plan around it.</p>
+        </div>
 
-      <button className="btn-primary w-full text-lg" onClick={start}>
-        Start practising — it&apos;s free
-      </button>
-      <p className="text-center text-xs text-ink-500 dark:text-slate-400">
-        Not affiliated with the Department of Transport or RTMC.
-      </p>
+        <button className="btn-primary mt-7 w-full text-[17px]" onClick={start}>
+          Start practising — it&apos;s free
+        </button>
+        <p className="pb-8 pt-4 text-center text-xs font-medium text-muted">
+          Not affiliated with the Department of Transport or RTMC.
+        </p>
+      </div>
     </div>
   );
 }

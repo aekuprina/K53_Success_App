@@ -53,12 +53,12 @@ export default function SignPage({ params }: { params: { id: string } }) {
         </div>
       )}
 
-      <Link href="/practice/session/?topic=reg" className="mt-5 flex items-center gap-4 rounded-tile bg-accent px-5 py-4 text-accentink">
+      <Link href="/practice/session/?topic=reg" className="mt-5 flex items-center gap-4 rounded-tile bg-hero px-5 py-4 text-heroink">
         <span>
           <span className="block text-lg font-bold">Think you know your signs?</span>
-          <span className="mt-0.5 block text-[12.5px] font-medium opacity-80">Test yourself free — no registration</span>
+          <span className="mt-0.5 block text-[12.5px] font-medium text-heromut">Test yourself free — no registration</span>
         </span>
-        <span className="ml-auto font-display text-[22px] font-bold">→</span>
+        <span className="ml-auto font-display text-[22px] font-bold text-accent">→</span>
       </Link>
     </div>
   );

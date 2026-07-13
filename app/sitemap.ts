@@ -5,7 +5,7 @@ export const dynamic = "force-static";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const base = "https://k53-success-app.vercel.app";
-  const core = ["", "/practice/", "/exam/", "/signs/", "/mistakes/", "/about/", "/privacy/", "/terms/"].map((p) => ({
+  const core = ["", "/practice/", "/practice/topics/", "/exam/", "/signs/", "/signs/browse/", "/mistakes/", "/about/", "/privacy/", "/terms/"].map((p) => ({
     url: `${base}${p}`,
     changeFrequency: "weekly" as const,
     priority: p === "" ? 1 : 0.7,

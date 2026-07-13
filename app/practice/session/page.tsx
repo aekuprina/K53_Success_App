@@ -2,7 +2,7 @@
 
 import { Suspense, useMemo, useState } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { buildPracticeSession } from "@/lib/quiz";
 import { getState } from "@/lib/store";
 import { topicById } from "@/data/topics";
@@ -10,6 +10,7 @@ import { QuizRunner } from "@/components/QuizRunner";
 
 function SessionInner() {
   const params = useSearchParams();
+  const router = useRouter();
   const topic = params.get("topic") ?? "rules-road";
   const [done, setDone] = useState<number | null>(null);
   const [runId, setRunId] = useState(0);
@@ -25,7 +26,8 @@ function SessionInner() {
     const pct = Math.round((done / items.length) * 100);
     return (
       <div className="flex min-h-[80vh] animate-screenIn flex-col items-center justify-center px-6 text-center">
-        <div className="font-display text-[96px] font-bold leading-none">
+        <div className="caps-label">{t?.name}</div>
+        <div className="mt-2 font-display text-[96px] font-bold leading-none">
           {done}<span className="text-[28px] text-accent">/{items.length}</span>
         </div>
         <h1 className="h-display mt-3 text-[26px]">{pct >= 75 ? "Strong work" : "Keep going"}</h1>
@@ -43,15 +45,7 @@ function SessionInner() {
     );
   }
 
-  return (
-    <div className="px-6 pt-4">
-      <div className="mb-4 flex items-center justify-between">
-        <Link href="/practice/" className="text-[15px] font-bold text-accent">← Practice</Link>
-        <h1 className="h-display text-lg">{t?.name}</h1>
-      </div>
-      <QuizRunner items={items} onDone={setDone} />
-    </div>
-  );
+  return <QuizRunner items={items} onDone={setDone} onExit={() => router.push("/practice/")} exitLabel="Practice" />;
 }
 
 export default function PracticeSession() {

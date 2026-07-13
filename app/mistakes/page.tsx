@@ -13,12 +13,7 @@ export default function Mistakes() {
   const [done, setDone] = useState<number | null>(null);
 
   if (session && done === null) {
-    return (
-      <div className="px-6 pt-4">
-        <button className="mb-4 text-[15px] font-bold text-accent" onClick={() => setSession(null)}>← Stop session</button>
-        <QuizRunner items={session} onDone={setDone} />
-      </div>
-    );
+    return <QuizRunner items={session} onDone={setDone} onExit={() => setSession(null)} exitLabel="Stop" />;
   }
 
   if (session && done !== null) {

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { buildMockExam, scoreMock, ShuffledQuestion, MockOutcome } from "@/lib/quiz";
 import { addMockResult, recordAnswer, useAppState } from "@/lib/store";
 import { getTr } from "@/lib/i18n";
+import { useHideNav } from "@/lib/ui";
 import { BLOCK_META, EXAM_MINUTES, EXAM_TOTAL } from "@/data/topics";
 
 type Phase = "intro" | "running" | "results";
@@ -19,7 +20,9 @@ export default function MockExam() {
   const [i, setI] = useState(0);
   const [secondsLeft, setSecondsLeft] = useState(EXAM_MINUTES * 60);
   const [outcome, setOutcome] = useState<MockOutcome | null>(null);
+  const [confirmFinish, setConfirmFinish] = useState(false);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  useHideNav(phase === "running");
 
   function start() {
     const built = buildMockExam();
@@ -108,18 +111,29 @@ export default function MockExam() {
       .map((item, idx) => ({ item, idx }))
       .filter(({ item, idx }) => answers[idx] !== item.answerIndex);
     return (
-      <div className="animate-screenIn px-6 pb-8 pt-8">
-        <div className="text-center">
-          <div className="caps-label">Mock result</div>
-          <div className="mt-2 font-display text-[96px] font-bold leading-[0.85]">
-            {outcome.percent}<span className="text-[28px] text-accent">%</span>
+      <div className="animate-screenIn">
+        {/* Hero header — matches home */}
+        <div className="rounded-b-hero bg-hero pb-8 text-heroink">
+          <div className="flex items-center justify-between px-6 pt-4">
+            <Link href="/" className="text-[15px] font-bold text-accent">← Home</Link>
+            <span className={`rounded-full px-3 py-1.5 text-[11px] font-bold tracking-[0.08em] ${outcome.passed ? "bg-ok text-white" : "bg-accent text-accentink"}`}>
+              {outcome.passed ? "PASSED" : "NOT PASSED"}
+            </span>
           </div>
-          <h1 className={`h-display mt-3 text-[28px] ${outcome.passed ? "text-ok" : "text-bad"}`}>
-            {outcome.passed ? "You passed" : "Not yet"}
-          </h1>
+          <div className="px-6 pt-5">
+            <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-heromut">Mock result · 64 scored</div>
+            <div className="mt-2 flex items-start gap-1.5">
+              <span className="font-display text-[96px] font-bold leading-[0.85]">{outcome.percent}</span>
+              <span className="mt-1.5 font-display text-[24px] font-semibold text-accent">%</span>
+            </div>
+            <div className="mt-3 text-[24px] font-bold">
+              {outcome.passed ? "You passed — keep it warm" : "Not yet — keep going"}
+            </div>
+          </div>
         </div>
 
-        <div className="card mt-6">
+        <div className="px-6 pb-4 pt-6">
+        <div className="card">
           {blocks.map((b, idx) => {
             const ok = b.got >= b.pass;
             return (
@@ -141,7 +155,7 @@ export default function MockExam() {
 
         {wrong.length > 0 && (
           <div className="card mt-4">
-            <h2 className="h-display text-lg">Review mistakes ({wrong.length})</h2>
+            <h2 className="h-display text-lg">Review your mistakes ({wrong.length})</h2>
             {wrong.slice(0, 20).map(({ item, idx }) => (
               <div key={item.q.id} className="mt-4 border-t border-line pt-4 text-sm first:mt-2">
                 <p className="font-semibold">{item.q.q}</p>
@@ -156,9 +170,15 @@ export default function MockExam() {
         )}
 
         <div className="mt-5 flex flex-col gap-2.5">
-          <button className="btn-primary text-[17px]" onClick={start}>Try another mock</button>
-          <Link href="/mistakes/" className="btn-ghost">Practise my mistakes</Link>
-          <Link href="/" className="btn-ghost">Home</Link>
+          {wrong.length > 0 ? (
+            <>
+              <Link href="/mistakes/" className="btn-primary text-[17px]">Practise my {wrong.length} mistakes</Link>
+              <button className="btn-ghost" onClick={start}>Try another mock</button>
+            </>
+          ) : (
+            <button className="btn-primary text-[17px]" onClick={start}>Try another mock</button>
+          )}
+        </div>
         </div>
       </div>
     );
@@ -180,8 +200,8 @@ export default function MockExam() {
           <button
             className="text-sm font-bold text-accent"
             onClick={() => {
-              if (answeredCount < items.length && !window.confirm(`You have ${items.length - answeredCount} unanswered questions. Finish anyway?`)) return;
-              finish(answers, items);
+              if (answeredCount < items.length) setConfirmFinish(true);
+              else finish(answers, items);
             }}
           >
             Finish
@@ -224,6 +244,30 @@ export default function MockExam() {
           {answers[i] !== null ? "Next" : "Skip"}
         </button>
       </div>
+
+      {/* Finish confirmation — styled, no window.confirm */}
+      {confirmFinish && (
+        <div className="fixed inset-0 z-40 flex items-end justify-center backdrop-blur-[2px]" style={{ background: "rgba(2,0,53,0.55)" }} onClick={() => setConfirmFinish(false)}>
+          <div
+            className="mx-auto w-full max-w-lg animate-sheetUp rounded-t-[24px] bg-card px-6 pb-8 pt-6"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="font-display text-[64px] font-bold leading-none">
+              {items.length - answeredCount}
+            </div>
+            <p className="mt-1.5 text-lg font-bold">unanswered questions</p>
+            <p className="mt-1.5 text-sm font-medium leading-relaxed text-muted">
+              Unanswered questions count as wrong — same as the real test. Finish anyway?
+            </p>
+            <div className="mt-5 flex gap-3">
+              <button className="btn-ghost flex-1" onClick={() => setConfirmFinish(false)}>Keep going</button>
+              <button className="btn-primary flex-1" onClick={() => { setConfirmFinish(false); finish(answers, items); }}>
+                Finish now
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

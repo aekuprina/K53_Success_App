@@ -34,7 +34,7 @@ export default function Home() {
   return (
     <div className="animate-screenIn">
       {/* Hero */}
-      <div className="rounded-b-hero bg-hero pb-8 text-heroink">
+      <div className="rounded-b-hero bg-hero pb-7 text-heroink">
         <div className="flex items-center justify-between px-6 pt-4">
           <span className="text-[13px] font-extrabold tracking-[0.18em]">K53 SUCCESS</span>
           <span className="flex items-center gap-2">
@@ -48,13 +48,13 @@ export default function Home() {
             </Link>
           </span>
         </div>
-        <div className="px-6 pt-6">
+        <div className="px-6 pt-5">
           <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-heromut">Readiness</div>
           <div className="mt-2 flex items-start gap-1.5">
-            <span className="font-display text-[112px] font-bold leading-[0.8]">{r.score}</span>
+            <span className="font-display text-[104px] font-bold leading-[0.8]">{r.score}</span>
             <span className="mt-2 font-display text-[19px] font-semibold text-accent">/100</span>
           </div>
-          <div className="mt-3.5 text-[26px] font-bold">{label}</div>
+          <div className="mt-3 text-[26px] font-bold">{label}</div>
         </div>
         <div className="mx-6 mt-4 flex h-1.5 rounded-[3px] bg-white/15">
           <span className="rounded-[3px] bg-accent" style={{ width: `${Math.max(r.score, 2)}%` }} />
@@ -64,13 +64,13 @@ export default function Home() {
 
       {/* Fix these first */}
       {r.danger.length > 0 && (
-        <div className="px-6 pt-7">
+        <div className="px-6 pt-5">
           <div className="caps-label mb-0.5">Fix these first</div>
           {r.danger.map((d, i) => (
             <Link
               key={d.topic.id}
               href={`/practice/session/?topic=${d.topic.id}`}
-              className="flex items-center gap-3 border-b border-line py-4"
+              className="flex items-center gap-3 border-b border-line py-3.5"
             >
               <span className={`h-[7px] w-[7px] flex-none rounded-full ${i === 0 ? "bg-accent" : "bg-line"}`} />
               <span className="text-[17px] font-semibold">{d.topic.name}</span>
@@ -81,8 +81,8 @@ export default function Home() {
       )}
 
       {/* Mock exam CTA */}
-      <div className="px-6 pt-6">
-        <Link href="/exam/" className="flex items-center gap-4 rounded-tile bg-accent px-5 py-5 text-accentink">
+      <div className="px-6 pt-4">
+        <Link href="/exam/" className="flex items-center gap-4 rounded-tile bg-accent px-5 py-4 text-accentink">
           <span className="font-display text-[46px] font-bold leading-[0.8]">{EXAM_TOTAL}</span>
           <span>
             <span className="block text-xl font-bold">Mock exam</span>
@@ -93,7 +93,7 @@ export default function Home() {
       </div>
 
       {/* Tiles */}
-      <div className="grid grid-cols-2 gap-3 px-6 pt-3">
+      <div className="grid grid-cols-2 gap-2.5 px-6 pt-2.5">
         <Link href="/practice/" className="tile">
           <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><circle cx="12" cy="12" r="8.5" /><circle cx="12" cy="12" r="3.5" /></svg>
           <div className="mt-3 font-semibold">Practice topics</div>
@@ -123,7 +123,7 @@ export default function Home() {
 
       {/* Recent mock footer */}
       {lastMock && (
-        <div className="flex items-center justify-between px-6 pb-2 pt-6 text-[12.5px] font-medium text-muted">
+        <div className="flex items-center justify-between px-6 pb-2 pt-4 text-[12.5px] font-medium text-muted">
           <span>
             Recent mock ·{" "}
             <span className={`font-bold ${lastMock.passed ? "text-ok" : "text-accent"}`}>

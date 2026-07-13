@@ -3,74 +3,98 @@
 import Link from "next/link";
 import { useAppState } from "@/lib/store";
 import { computeReadiness } from "@/lib/readiness";
-import { BLOCK_META } from "@/data/topics";
-import { Block } from "@/data/types";
+import { BLOCK_META, TOPICS } from "@/data/topics";
 
-const BLOCK_ORDER: Block[] = ["rules", "signs", "controls"];
+const STEPS = ["Learn", "Practice", "Test"];
 
 export default function Practice() {
   const state = useAppState();
   const r = computeReadiness(state);
-  const weakest = [...r.topics].sort((a, b) => a.mastery - b.mastery)[0];
+  const byWeakness = [...r.topics].sort((a, b) => a.mastery - b.mastery);
+  const weakest = byWeakness[0];
+  const path = byWeakness.slice(0, 3);
+  const remaining = TOPICS.length - path.length;
+  const examShare = weakest
+    ? Math.round((BLOCK_META[weakest.topic.block].examCount / 64) * 100)
+    : 0;
 
   return (
     <div className="animate-screenIn px-6 pt-4">
-      <h1 className="h-display text-[28px]">Practice by topic</h1>
-      <p className="mt-1 text-sm font-medium text-muted">Weakest topics first — that&apos;s where the marks are.</p>
+      <h1 className="h-display text-[28px]">Practice</h1>
+      <p className="mt-1 text-sm font-medium text-muted">One step at a time — we picked where to start.</p>
 
-      {/* Start here — weakest topic hero card */}
+      {/* Start here — weakest topic hero card with Learn→Practice→Test stepper */}
       {weakest && (
-        <Link
-          href={`/practice/session/?topic=${weakest.topic.id}`}
-          className="mt-5 block rounded-[24px] bg-hero p-6 text-heroink"
-        >
+        <div className="mt-5 rounded-[24px] bg-hero p-6 text-heroink">
           <div className="text-[10.5px] font-bold uppercase tracking-[0.16em] text-accent">Start here · Your weakest</div>
-          <div className="h-display mt-3 text-[32px] leading-none">{weakest.topic.name}</div>
+          <div className="h-display mt-3 text-[32px] leading-[1.02]">{weakest.topic.name}</div>
           <div className="mt-2.5 text-[12.5px] font-medium text-heromut">
-            {weakest.total} questions · {Math.round(weakest.mastery * 100)}% mastered
+            {weakest.total} questions · ~6 min · {examShare}% of the exam
           </div>
-          <div className="mt-5 inline-flex items-center gap-2 rounded-tile bg-accent px-4 py-2.5 text-[15px] font-bold text-accentink">
-            Start practising <span className="font-display">→</span>
+
+          <div className="mt-5 flex items-center">
+            {STEPS.map((s, idx) => (
+              <span key={s} className="contents">
+                <span className="flex flex-none flex-col items-center gap-1.5">
+                  <span
+                    className={`flex h-6 w-6 items-center justify-center rounded-full font-display text-[11px] font-bold ${
+                      idx === 0 ? "bg-accent text-accentink" : "border-[1.5px] border-white/25 text-heromut"
+                    }`}
+                  >
+                    {idx + 1}
+                  </span>
+                  <span className={`text-[8.5px] font-bold uppercase tracking-[0.08em] ${idx === 0 ? "" : "text-heromut"}`}>{s}</span>
+                </span>
+                {idx < STEPS.length - 1 && <span className="mx-1 mb-4 h-[1.5px] flex-1 bg-white/25" />}
+              </span>
+            ))}
           </div>
-        </Link>
+
+          <Link
+            href={`/practice/session/?topic=${weakest.topic.id}`}
+            className="btn-primary mt-4 w-full text-[16px]"
+          >
+            Start practising <span className="ml-2 font-display">→</span>
+          </Link>
+        </div>
       )}
 
-      {BLOCK_ORDER.map((block) => {
-        const topics = r.topics.filter((t) => t.topic.block === block);
-        return (
-          <section key={block} className="pt-7">
-            <div className="caps-label">
-              {BLOCK_META[block].name} · pass {BLOCK_META[block].pass}/{BLOCK_META[block].examCount}
-            </div>
-            {topics
-              .sort((a, b) => a.mastery - b.mastery)
-              .map((t) => {
-                const pct = Math.round(t.mastery * 100);
-                return (
-                  <Link
-                    key={t.topic.id}
-                    href={`/practice/session/?topic=${t.topic.id}`}
-                    className="block border-b border-line py-4"
-                  >
-                    <div className="flex items-center justify-between">
-                      <span className="text-[17px] font-semibold">{t.topic.name}</span>
-                      <span className="text-[13px] font-medium text-muted">{pct}%</span>
-                    </div>
-                    <div className="mt-2.5 flex h-[5px] rounded-[3px] bg-line">
-                      <span
-                        className={`min-w-[8px] rounded-[3px] ${pct >= 75 ? "bg-ok" : "bg-accent"}`}
-                        style={{ width: `${Math.max(pct, 3)}%` }}
-                      />
-                    </div>
-                    <div className="mt-1.5 text-xs font-medium text-muted">
-                      {t.attempted}/{t.total} questions seen
-                    </div>
-                  </Link>
-                );
-              })}
-          </section>
-        );
-      })}
+      {/* Your path */}
+      <div className="pt-7">
+        <div className="caps-label">Your path · weakest first</div>
+        {path.map((t, idx) => (
+          <Link
+            key={t.topic.id}
+            href={`/practice/session/?topic=${t.topic.id}`}
+            className="flex items-center gap-3.5 border-b border-line py-4"
+          >
+            <span
+              className={`flex h-7 w-7 flex-none items-center justify-center rounded-full font-display text-[13px] font-bold ${
+                idx === 0 ? "bg-accent text-accentink" : "border-[1.5px] border-line text-muted"
+              }`}
+            >
+              {idx + 1}
+            </span>
+            <span>
+              <span className="block text-[16px] font-semibold">{t.topic.name}</span>
+              <span className="mt-0.5 block text-xs font-medium text-muted">
+                {t.attempted}/{t.total} questions seen
+              </span>
+            </span>
+            <span className="ml-auto text-[13px] font-medium text-muted">{Math.round(t.mastery * 100)}%</span>
+          </Link>
+        ))}
+        <div className="flex items-center gap-3.5 py-4">
+          <span className="flex h-7 w-7 flex-none items-center justify-center rounded-full border-[1.5px] border-dashed border-line font-display text-[13px] font-bold text-muted">
+            +
+          </span>
+          <span className="text-sm font-medium text-muted">{remaining} more topics — unlock as you go</span>
+        </div>
+      </div>
+
+      <Link href="/practice/topics/" className="block pb-4 pt-3 text-center text-[15px] font-bold text-accent">
+        Prefer to choose? Browse all topics
+      </Link>
     </div>
   );
 }

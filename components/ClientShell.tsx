@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAppState } from "@/lib/store";
+import { useNavHidden } from "@/lib/ui";
 
 // Icons from the Ultramarine prototype (21px, stroke 1.9)
 const NAV = [
@@ -17,6 +18,7 @@ const NAV = [
 export function ClientShell({ children }: { children: React.ReactNode }) {
   const state = useAppState();
   const pathname = usePathname();
+  const navHidden = useNavHidden();
 
   useEffect(() => {
     document.documentElement.classList.toggle("dark", state.dark);
@@ -28,13 +30,11 @@ export function ClientShell({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  const inQuiz = pathname?.startsWith("/exam") || pathname?.includes("/session");
-
   return (
     <div className="mx-auto flex min-h-screen max-w-lg flex-col">
-      <main className={`flex-1 ${inQuiz ? "pb-6" : "pb-24"}`}>{children}</main>
-      {!inQuiz && (
-        <nav className="fixed inset-x-0 bottom-0 z-20 border-t border-line bg-ground/95 backdrop-blur">
+      <main className={`flex-1 ${navHidden ? "pb-6" : "pb-28"}`}>{children}</main>
+      {!navHidden && (
+        <nav className="fixed inset-x-0 bottom-0 z-20 border-t border-line bg-ground">
           <div className="mx-auto flex max-w-lg px-3 pb-5 pt-3">
             {NAV.map((item) => {
               const active = item.href === "/" ? pathname === "/" : pathname?.startsWith(item.href.replace(/\/$/, ""));

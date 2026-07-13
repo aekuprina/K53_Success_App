@@ -6,6 +6,7 @@ const BLUE = "#00539f";
 const GREEN = "#007749";
 const YELLOW = "#f5c400";
 const INK = "#1a1a1a";
+const FONT = "Archivo, 'Helvetica Neue', Arial, sans-serif";
 
 function Glyph({ id, color }: { id: string; color: string }) {
   const c = color;
@@ -51,7 +52,7 @@ function Glyph({ id, color }: { id: string; color: string }) {
     case "slippery":
       return <><path d="M30 40 Q36 34 44 38 L62 34 Q70 32 72 40 L66 44 Q60 40 52 44 L38 48 Q30 48 30 40 Z" fill={c} /><path d="M30 62 Q38 56 46 62 M52 68 Q60 62 68 68" stroke={c} strokeWidth="4" fill="none" /></>;
     case "hill":
-      return <><path d="M22 70 L50 40 L78 70 Z" fill={c} /><text x="50" y="66" textAnchor="middle" fontSize="14" fontWeight="700" fill="#fff">10%</text></>;
+      return <><path d="M22 70 L50 40 L78 70 Z" fill={c} /><text fontFamily={FONT} x="50" y="66" textAnchor="middle" fontSize="14" fontWeight="700" fill="#fff">10%</text></>;
     case "rocks":
       return <><path d="M30 30 L44 40 L36 48 L52 56 L44 64 L60 72 L24 72 Z" fill={c} /><circle cx="62" cy="38" r="4" fill={c} /><circle cx="68" cy="52" r="4" fill={c} /></>;
     case "hump":
@@ -75,11 +76,11 @@ function Glyph({ id, color }: { id: string; color: string }) {
     case "info-i":
       return <text x="50" y="70" textAnchor="middle" fontSize="56" fontStyle="italic" fontWeight="700" fill={c} fontFamily="Georgia, serif">i</text>;
     case "hospital-h":
-      return <text x="50" y="70" textAnchor="middle" fontSize="56" fontWeight="800" fill={c}>H</text>;
+      return <text fontFamily={FONT} x="50" y="70" textAnchor="middle" fontSize="56" fontWeight="800" fill={c}>H</text>;
     case "parking-p":
-      return <text x="50" y="70" textAnchor="middle" fontSize="56" fontWeight="800" fill={c}>P</text>;
+      return <text fontFamily={FONT} x="50" y="70" textAnchor="middle" fontSize="56" fontWeight="800" fill={c}>P</text>;
     case "stop-s":
-      return <text x="50" y="70" textAnchor="middle" fontSize="56" fontWeight="800" fill={c}>S</text>;
+      return <text fontFamily={FONT} x="50" y="70" textAnchor="middle" fontSize="56" fontWeight="800" fill={c}>S</text>;
     case "no-entry-bar":
       return <rect x="24" y="43" width="52" height="14" rx="2" fill="#fff" />;
     case "one-way":
@@ -91,19 +92,19 @@ function Glyph({ id, color }: { id: string; color: string }) {
     case "exit-3":
       return <><path d="M30 26 L42 26 L42 74 L30 74 Z" transform="skewX(-14)" fill={c} /><path d="M52 26 L64 26 L64 74 L52 74 Z" transform="skewX(-14)" fill={c} /><path d="M74 26 L86 26 L86 74 L74 74 Z" transform="skewX(-14)" fill={c} /></>;
     case "route-n1":
-      return <text x="50" y="66" textAnchor="middle" fontSize="36" fontWeight="800" fill={c}>N1</text>;
+      return <text fontFamily={FONT} x="50" y="66" textAnchor="middle" fontSize="36" fontWeight="800" fill={c}>N1</text>;
     case "speed-60":
-      return <text x="50" y="66" textAnchor="middle" fontSize="40" fontWeight="800" fill={INK}>60</text>;
+      return <text fontFamily={FONT} x="50" y="66" textAnchor="middle" fontSize="40" fontWeight="800" fill={INK}>60</text>;
     case "speed-100":
-      return <text x="50" y="64" textAnchor="middle" fontSize="32" fontWeight="800" fill={INK}>100</text>;
+      return <text fontFamily={FONT} x="50" y="64" textAnchor="middle" fontSize="32" fontWeight="800" fill={INK}>100</text>;
     case "speed-120":
-      return <text x="50" y="64" textAnchor="middle" fontSize="32" fontWeight="800" fill={INK}>120</text>;
+      return <text fontFamily={FONT} x="50" y="64" textAnchor="middle" fontSize="32" fontWeight="800" fill={INK}>120</text>;
     case "min-40":
-      return <text x="50" y="66" textAnchor="middle" fontSize="40" fontWeight="800" fill="#fff">40</text>;
+      return <text fontFamily={FONT} x="50" y="66" textAnchor="middle" fontSize="40" fontWeight="800" fill="#fff">40</text>;
     case "height-4m":
-      return <><text x="50" y="60" textAnchor="middle" fontSize="24" fontWeight="800" fill={INK}>4,2 m</text><path d="M30 30 L38 38 L34 38 L34 42 L26 42 L26 38 L22 38 Z" transform="translate(20 -8)" fill={INK} /></>;
+      return <><text fontFamily={FONT} x="50" y="60" textAnchor="middle" fontSize="24" fontWeight="800" fill={INK}>4,2 m</text><path d="M30 30 L38 38 L34 38 L34 42 L26 42 L26 38 L22 38 Z" transform="translate(20 -8)" fill={INK} /></>;
     case "weight-10t":
-      return <text x="50" y="64" textAnchor="middle" fontSize="30" fontWeight="800" fill={INK}>10 t</text>;
+      return <text fontFamily={FONT} x="50" y="64" textAnchor="middle" fontSize="30" fontWeight="800" fill={INK}>10 t</text>;
     case "no-overtake":
       return <><path d="M28 58 L32 48 Q34 44 39 44 L49 44 Q54 44 56 48 L60 58 L60 64 L54 64 A4 4 0 0 1 44 64 L44 64 L34 64 A4 4 0 0 1 28 64 Z" fill={RED} /><path d="M46 40 L50 32 Q52 28 56 28 L64 28 Q69 28 71 32 L74 40 L74 46 L69 46 A4 4 0 0 1 60 46 L58 46 A4 4 0 0 1 50 46 L46 46 Z" transform="translate(-4 24)" fill={INK} /></>;
     case "both-ways-arrow":
@@ -130,7 +131,7 @@ export function SignSvg({ spec, size = 72 }: { spec: SignSpec; size?: number }) 
       frame = (
         <>
           <polygon points="30,4 70,4 96,30 96,70 70,96 30,96 4,70 4,30" fill={RED} stroke="#fff" strokeWidth="4" />
-          <text x="50" y="60" textAnchor="middle" fontSize="24" fontWeight="800" fill="#fff">STOP</text>
+          <text fontFamily={FONT} x="50" y="60" textAnchor="middle" fontSize="24" fontWeight="800" fill="#fff">STOP</text>
         </>
       );
       break;

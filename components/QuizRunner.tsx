@@ -5,20 +5,27 @@ import { ShuffledQuestion } from "@/lib/quiz";
 import { recordAnswer, toggleBookmark, useAppState } from "@/lib/store";
 import { topicById } from "@/data/topics";
 import { getTr } from "@/lib/i18n";
+import { useHideNav } from "@/lib/ui";
 
 const LETTERS = ["A", "B", "C", "D"];
 
 interface Props {
   items: ShuffledQuestion[];
   onDone: (correct: number) => void;
+  onExit?: () => void;
+  exitLabel?: string;
 }
 
-/** Practice-style runner: answer → instant feedback sheet + plain-language explanation */
-export function QuizRunner({ items, onDone }: Props) {
+/**
+ * Study runner, Ultramarine layout: question is the central element,
+ * options sit at the bottom within thumb reach, feedback slides up as a sheet.
+ */
+export function QuizRunner({ items, onDone, onExit, exitLabel = "Back" }: Props) {
   const state = useAppState();
   const [i, setI] = useState(0);
   const [picked, setPicked] = useState<number | null>(null);
   const [correctCount, setCorrectCount] = useState(0);
+  useHideNav();
 
   if (items.length === 0) return null;
   const item = items[i];
@@ -45,32 +52,40 @@ export function QuizRunner({ items, onDone }: Props) {
   }
 
   return (
-    <div className="animate-screenIn">
-      <div className="flex items-center justify-between text-sm">
-        <span className="font-bold">
-          {i + 1} / {items.length}
-        </span>
-        <span className="caps-label !mb-0">{topicById(item.q.topic)?.name}</span>
-        <button
-          aria-label={bookmarked ? "Remove bookmark" : "Bookmark this question"}
-          onClick={() => toggleBookmark(item.q.id)}
-          className={bookmarked ? "text-accent" : "text-muted"}
-        >
-          <svg viewBox="0 0 24 24" className="h-[22px] w-[22px]" fill={bookmarked ? "currentColor" : "none"} stroke="currentColor" strokeWidth="1.9" strokeLinejoin="round">
-            <path d="M6 3h12v18l-6-4-6 4z" />
-          </svg>
-        </button>
-      </div>
-      <div className="mt-3 flex h-1.5 rounded-[3px] bg-line">
-        <span className="rounded-[3px] bg-accent transition-all" style={{ width: `${((i + (answered ? 1 : 0)) / items.length) * 100}%` }} />
+    <div className="flex min-h-screen animate-screenIn flex-col px-6 pt-4">
+      {/* Top bar */}
+      <div>
+        <div className="flex items-center justify-between">
+          {onExit ? (
+            <button className="text-[15px] font-bold text-accent" onClick={onExit}>← {exitLabel}</button>
+          ) : (
+            <span className="font-bold">{i + 1} / {items.length}</span>
+          )}
+          {onExit && <span className="font-bold">{i + 1} / {items.length}</span>}
+          <button
+            aria-label={bookmarked ? "Remove bookmark" : "Bookmark this question"}
+            onClick={() => toggleBookmark(item.q.id)}
+            className={`-m-2 p-2 ${bookmarked ? "text-accent" : "text-muted"}`}
+          >
+            <svg viewBox="0 0 24 24" className="h-[22px] w-[22px]" fill={bookmarked ? "currentColor" : "none"} stroke="currentColor" strokeWidth="1.9" strokeLinejoin="round">
+              <path d="M6 3h12v18l-6-4-6 4z" />
+            </svg>
+          </button>
+        </div>
+        <div className="mt-3 flex h-1.5 rounded-[3px] bg-line">
+          <span className="rounded-[3px] bg-accent transition-all" style={{ width: `${((i + (answered ? 1 : 0)) / items.length) * 100}%` }} />
+        </div>
       </div>
 
-      <div className="pb-4 pt-8">
-        <h2 className="text-[22px] font-bold leading-[1.32]">{item.q.q}</h2>
-        {tr?.q && <p className="mt-2 text-sm font-medium italic text-muted">{tr.q}</p>}
+      {/* Question — the central element */}
+      <div className="flex flex-1 flex-col justify-center py-6">
+        <div className="caps-label">{topicById(item.q.topic)?.name}</div>
+        <h2 className="mt-3 text-[26px] font-bold leading-[1.32]">{item.q.q}</h2>
+        {tr?.q && <p className="mt-2.5 text-sm font-medium italic text-muted">{tr.q}</p>}
       </div>
 
-      <div className="space-y-2.5">
+      {/* Options — bottom, thumb reach */}
+      <div className="space-y-2.5 pb-2">
         {item.options.map((opt, idx) => {
           let box = "option-btn";
           let chip = "option-chip";
@@ -93,13 +108,20 @@ export function QuizRunner({ items, onDone }: Props) {
           );
         })}
       </div>
+      <p className={`pb-6 pt-1 text-center text-xs font-medium text-muted ${answered ? "invisible" : ""}`}>
+        Tap the answer you think is correct
+      </p>
 
+      {/* Feedback sheet */}
       {answered && (
-        <div className="mt-4 animate-sheetUp">
-          <div className={`rounded-tile p-4 ${wasCorrect ? "bg-ok-soft" : "bg-bad-soft"}`}>
-            <p className={`font-display text-lg font-bold uppercase ${wasCorrect ? "text-ok" : "text-bad"}`}>
+        <div className="fixed inset-x-0 bottom-0 z-30">
+          <div className="mx-auto max-w-lg animate-sheetUp rounded-t-[24px] bg-card px-6 pb-7 pt-5 shadow-[0_-12px_44px_rgba(2,0,53,0.28)]">
+            <p className={`font-display text-xl font-bold uppercase ${wasCorrect ? "text-ok" : "text-bad"}`}>
               {wasCorrect ? "Correct" : "Not quite"}
             </p>
+            {!wasCorrect && (
+              <p className="mt-1.5 text-sm font-bold">Correct: {item.options[item.answerIndex]}</p>
+            )}
             {tr ? (
               <>
                 <p className="mt-1.5 text-sm font-medium leading-relaxed">{tr.explain}</p>
@@ -109,10 +131,10 @@ export function QuizRunner({ items, onDone }: Props) {
               <p className="mt-1.5 text-sm font-medium leading-relaxed">{item.q.explain}</p>
             )}
             {item.q.rule && <p className="mt-1.5 text-xs text-muted">Reference: {item.q.rule}</p>}
+            <button className="btn-primary mt-4 w-full text-[17px]" onClick={next}>
+              {i + 1 >= items.length ? "Finish" : "Next question"}
+            </button>
           </div>
-          <button className="btn-primary mt-3 w-full text-[17px]" onClick={next}>
-            {i + 1 >= items.length ? "Finish" : "Next question"}
-          </button>
         </div>
       )}
     </div>

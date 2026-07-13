@@ -2,66 +2,105 @@
 
 import Link from "next/link";
 import { useAppState } from "@/lib/store";
-import { computeReadiness } from "@/lib/readiness";
-import { SIGNS, SIGN_CATEGORIES } from "@/data/signs";
+import { SIGNS, SIGN_CATEGORIES, signById } from "@/data/signs";
+import { SignSvg } from "@/components/SignSvg";
+import { categoryProgress, overallProgress, isLearned } from "@/lib/drill";
 
-// Sign-related practice topics, weakest drives the daily drill
-const SIGN_TOPICS = ["reg", "warn", "guide", "mark", "tsig"];
-
-const CAT_ICONS: Record<string, React.ReactNode> = {
-  regulatory: <circle cx="12" cy="12" r="8.5" />,
-  warning: <path d="M12 4 21 20H3z" strokeLinejoin="round" />,
-  guidance: <path d="M4 12h13M13 6l6 6-6 6" />,
-  information: <><rect x="4" y="4" width="16" height="16" rx="3" /><path d="M12 10.5V16M12 8v.5" /></>,
-  temporary: <><path d="M6 20 12 5l6 15" strokeLinejoin="round" /><path d="M8.5 14h7" /></>,
+// Representative sign shown as the category thumbnail
+const CAT_REP: Record<string, string> = {
+  regulatory: "speed-60",
+  warning: "w-general",
+  guidance: "g-freeway-dir",
+  information: "i-parking",
+  temporary: "t-roadworks",
 };
 
 export default function SignsLanding() {
   const state = useAppState();
-  const r = computeReadiness(state);
-  const signTopics = r.topics.filter((t) => SIGN_TOPICS.includes(t.topic.id));
-  const weakest = [...signTopics].sort((a, b) => a.mastery - b.mastery)[0];
-  const missRate = weakest ? 100 - Math.round(weakest.mastery * 100) : 100;
+  const overall = overallProgress(state);
+  const overallPct = overall.total ? Math.round((overall.learned / overall.total) * 100) : 0;
+
+  const progress = SIGN_CATEGORIES.map((c) => ({
+    meta: c,
+    ...categoryProgress(state, c.id),
+    share: categoryProgress(state, c.id).total
+      ? categoryProgress(state, c.id).learned / categoryProgress(state, c.id).total
+      : 0,
+  }));
+  const weakest = [...progress].sort((a, b) => a.share - b.share)[0];
+  const missRate = weakest ? 100 - Math.round(weakest.share * 100) : 100;
+  const heroSign =
+    SIGNS.find((s) => s.category === weakest?.meta.id && !isLearned(state, s.id)) ??
+    signById(CAT_REP[weakest?.meta.id ?? "warning"]);
 
   return (
     <div className="animate-screenIn px-6 pt-4">
       <h1 className="h-display text-[28px]">Road signs</h1>
-      <p className="mt-1 text-sm font-medium text-muted">{SIGNS.length} signs · offline · growing every release</p>
 
-      {/* Daily drill — weakest sign topic */}
+      {/* Learning progress */}
+      <div className="mt-3 flex items-center justify-between">
+        <span className="caps-label !mb-0">{overall.learned} of {overall.total} learned</span>
+        <span className="text-[13px] font-medium text-muted">{overallPct}% recognised</span>
+      </div>
+      <div className="mt-2 flex h-1.5 rounded-[3px] bg-line">
+        <span className="rounded-[3px] bg-accent" style={{ width: `${Math.max(overallPct, 2)}%` }} />
+      </div>
+
+      {/* Daily drill — weakest category, with the sign itself */}
       {weakest && (
         <div className="mt-5 rounded-[24px] bg-hero p-6 text-heroink">
           <div className="text-[10.5px] font-bold uppercase tracking-[0.16em] text-accent">Daily drill · What you miss most</div>
-          <div className="h-display mt-3 text-[32px] leading-[1.02]">{weakest.topic.name}</div>
-          <div className="mt-2.5 text-[12.5px] font-medium text-heromut">
-            Your weakest set · miss rate {missRate}%
+          <div className="mt-3 flex items-center gap-4">
+            <div className="min-w-0 flex-1">
+              <div className="h-display text-[30px] leading-[1.02]">{weakest.meta.name}</div>
+              <div className="mt-2 text-[12.5px] font-medium text-heromut">Your weakest set · miss rate {missRate}%</div>
+            </div>
+            {heroSign && <SignSvg spec={heroSign} size={86} />}
           </div>
-          <Link href={`/practice/session/?topic=${weakest.topic.id}`} className="btn-primary mt-5 w-full text-[16px]">
+          <div className="mt-4 flex items-center gap-3">
+            <div className="flex h-[6px] flex-1 rounded-[3px] bg-white/15">
+              <span className="rounded-[3px] bg-accent" style={{ width: `${Math.max(weakest.share * 100, 3)}%` }} />
+            </div>
+            <span className="font-display text-[13px] font-bold">{weakest.learned} / {weakest.total}</span>
+          </div>
+          <Link href={`/signs/drill/?cat=${weakest.meta.id}`} className="btn-primary mt-4 w-full text-[16px]">
             Start recognition drill <span className="ml-2 font-display">→</span>
           </Link>
         </div>
       )}
 
-      {/* Browse by type */}
+      {/* Browse by type — real signs, learning progress per category */}
       <div className="pt-7">
         <div className="caps-label">Browse by type</div>
-        {SIGN_CATEGORIES.map((c) => {
-          const count = SIGNS.filter((s) => s.category === c.id).length;
+        {progress.map((p) => {
+          const rep = signById(CAT_REP[p.meta.id]);
+          const isWeakest = p.meta.id === weakest?.meta.id;
           return (
             <Link
-              key={c.id}
-              href={`/signs/browse/?cat=${c.id}`}
-              className="flex items-center gap-3.5 border-b border-line py-4"
+              key={p.meta.id}
+              href={`/signs/cat/${p.meta.id}/`}
+              className="flex items-center gap-3.5 border-b border-line py-3.5"
             >
-              <span className="flex h-9 w-9 flex-none items-center justify-center rounded-full border-[1.5px] border-line">
-                <svg viewBox="0 0 24 24" className="h-[18px] w-[18px]" fill="none" stroke="currentColor" strokeWidth="1.8">
-                  {CAT_ICONS[c.id]}
-                </svg>
+              <span className="flex h-11 w-11 flex-none items-center justify-center">
+                {rep && <SignSvg spec={rep} size={40} />}
               </span>
-              <span className="text-[16px] font-semibold">{c.name.replace(" signs", "")}</span>
-              <span className="ml-auto flex items-center gap-2 text-[13px] font-medium text-muted">
-                {count}
-                <span className="font-display text-accent">→</span>
+              <span className="min-w-0 flex-1">
+                <span className="flex items-center gap-2">
+                  <span className="text-[16px] font-semibold">{p.meta.name.replace(" signs", "")}</span>
+                  {isWeakest && (
+                    <span className="rounded-full px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.08em] text-accent" style={{ background: "rgba(237,75,0,0.12)" }}>
+                      Weakest
+                    </span>
+                  )}
+                </span>
+                <span className="mt-1.5 flex h-[4px] max-w-[180px] rounded-[3px] bg-line">
+                  <span className="min-w-[4px] rounded-[3px] bg-accent" style={{ width: `${Math.max(p.share * 100, 2)}%` }} />
+                </span>
+              </span>
+              <span className="ml-2 flex flex-none items-center gap-1.5 text-[14px]">
+                <span className="font-display font-bold">{p.learned}</span>
+                <span className="font-medium text-muted">/{p.total}</span>
+                <span className="text-muted">›</span>
               </span>
             </Link>
           );

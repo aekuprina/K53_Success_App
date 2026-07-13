@@ -81,6 +81,8 @@ function Glyph({ id, color }: { id: string; color: string }) {
       return <text fontFamily={FONT} x="50" y="70" textAnchor="middle" fontSize="56" fontWeight="800" fill={c}>P</text>;
     case "stop-s":
       return <text fontFamily={FONT} x="50" y="70" textAnchor="middle" fontSize="56" fontWeight="800" fill={c}>S</text>;
+    case "exclaim":
+      return <><rect x="45" y="24" width="10" height="36" rx="4" fill={c} /><circle cx="50" cy="72" r="6.5" fill={c} /></>;
     case "no-entry-bar":
       return <rect x="24" y="43" width="52" height="14" rx="2" fill="#fff" />;
     case "one-way":

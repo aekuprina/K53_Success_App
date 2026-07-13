@@ -25,6 +25,8 @@ export interface AppState {
   dark: boolean;
   lang: "en" | "af" | "zu" | "xh";
   stats: Record<string, QStat>;
+  /** Per-sign recognition stats from the signs drill (keyed by sign id) */
+  signStats: Record<string, QStat>;
   mistakes: string[];
   bookmarks: string[];
   mocks: MockResult[];
@@ -38,6 +40,7 @@ const DEFAULT_STATE: AppState = {
   dark: false,
   lang: "en",
   stats: {},
+  signStats: {},
   mistakes: [],
   bookmarks: [],
   mocks: [],
@@ -100,6 +103,18 @@ export function recordAnswer(qid: string, correct: boolean) {
   if (!correct && !mistakes.includes(qid)) mistakes = [...mistakes, qid];
   if (correct && next.streak >= 2 && mistakes.includes(qid)) mistakes = mistakes.filter((m) => m !== qid);
   setState({ stats: { ...s.stats, [qid]: next }, mistakes });
+}
+
+export function recordSignAnswer(signId: string, correct: boolean) {
+  const s = load();
+  const prev = s.signStats[signId] ?? { a: 0, c: 0, streak: 0, last: 0 };
+  const next: QStat = {
+    a: prev.a + 1,
+    c: prev.c + (correct ? 1 : 0),
+    streak: correct ? prev.streak + 1 : 0,
+    last: Date.now(),
+  };
+  setState({ signStats: { ...s.signStats, [signId]: next } });
 }
 
 export function toggleBookmark(qid: string) {

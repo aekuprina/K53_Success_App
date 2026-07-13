@@ -51,6 +51,7 @@ export const SIGNS: SignSpec[] = [
   { id: "cycles-only", name: "Cycles only", category: "regulatory", shape: "command", glyph: "bicycle", desc: "This lane or path is reserved for pedal cycles." },
   { id: "pedestrians-only", name: "Pedestrians only", category: "regulatory", shape: "command", glyph: "person", desc: "This area is reserved for pedestrians." },
   // Warning signs
+  { id: "w-general", name: "General warning", category: "warning", shape: "warning", glyph: "exclaim", desc: "Danger ahead that no other sign describes. Slow down and be alert." },
   { id: "w-crossroad", name: "Crossroad ahead", category: "warning", shape: "warning", glyph: "crossroad", desc: "An intersection is ahead. Check for crossing traffic." },
   { id: "w-t-junction", name: "T-junction ahead", category: "warning", shape: "warning", glyph: "t-junction", desc: "The road you are on ends ahead. Prepare to turn left or right." },
   { id: "w-curve-right", name: "Sharp curve right", category: "warning", shape: "warning", glyph: "curve-right", desc: "Slow down before the curve — not in it." },

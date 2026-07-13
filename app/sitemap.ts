@@ -1,5 +1,5 @@
 import { MetadataRoute } from "next";
-import { SIGNS } from "@/data/signs";
+import { SIGNS, SIGN_CATEGORIES } from "@/data/signs";
 
 export const dynamic = "force-static";
 
@@ -10,10 +10,15 @@ export default function sitemap(): MetadataRoute.Sitemap {
     changeFrequency: "weekly" as const,
     priority: p === "" ? 1 : 0.7,
   }));
+  const cats = SIGN_CATEGORIES.map((c) => ({
+    url: `${base}/signs/cat/${c.id}/`,
+    changeFrequency: "monthly" as const,
+    priority: 0.65,
+  }));
   const signs = SIGNS.map((s) => ({
     url: `${base}/signs/${s.id}/`,
     changeFrequency: "monthly" as const,
     priority: 0.6,
   }));
-  return [...core, ...signs];
+  return [...core, ...cats, ...signs];
 }

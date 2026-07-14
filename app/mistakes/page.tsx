@@ -6,6 +6,8 @@ import { useAppState, getState } from "@/lib/store";
 import { buildMistakesSession, shuffleOptions, ShuffledQuestion } from "@/lib/quiz";
 import { BANK_BY_ID } from "@/data/bank";
 import { QuizRunner } from "@/components/QuizRunner";
+import { LimitReached } from "@/components/LimitReached";
+import { questionsLeftToday } from "@/lib/premium";
 
 export default function Mistakes() {
   const state = useAppState();
@@ -13,6 +15,7 @@ export default function Mistakes() {
   const [done, setDone] = useState<number | null>(null);
 
   if (session && done === null) {
+    if (questionsLeftToday(state) <= 0) return <LimitReached />;
     return <QuizRunner items={session} onDone={setDone} onExit={() => setSession(null)} exitLabel="Stop" />;
   }
 

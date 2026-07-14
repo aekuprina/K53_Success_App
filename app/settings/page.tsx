@@ -3,13 +3,29 @@
 import Link from "next/link";
 import { useAppState, setState, resetState } from "@/lib/store";
 import { LANGS } from "@/lib/i18n";
+import { isEntitled } from "@/lib/premium";
 
 export default function Settings() {
   const state = useAppState();
+  const entitled = isEntitled(state);
 
   return (
     <div className="animate-screenIn px-6 pt-4">
       <h1 className="h-display text-[26px]">Settings</h1>
+
+      {/* Plan */}
+      <div className="card mt-4 flex items-center justify-between">
+        <div>
+          <div className="caps-label">Your plan</div>
+          <div className="mt-1 text-lg font-bold">
+            {state.entitlement === "pass" ? "Pass Pack" : state.entitlement === "unlock" ? "Unlock" : "Free"}
+          </div>
+          {!entitled && <div className="text-xs font-medium text-muted">15 questions/day · 1 mock · signs free</div>}
+        </div>
+        {!entitled && (
+          <Link href="/upgrade/" className="btn-primary !px-4 !py-2.5 text-sm">Upgrade</Link>
+        )}
+      </div>
 
       <div className="card mt-4">
         <label className="flex items-center justify-between">
@@ -74,6 +90,12 @@ export default function Settings() {
       </div>
 
       <div className="card mt-4 !py-2">
+        <button
+          className="block w-full border-b border-line py-4 text-left text-[17px] font-semibold"
+          onClick={() => window.alert("Restore purchases becomes available in the App Store / Google Play version.")}
+        >
+          Restore purchases
+        </button>
         <Link href="/about/" className="block border-b border-line py-4 text-[17px] font-semibold">About K53 Success</Link>
         <Link href="/privacy/" className="block border-b border-line py-4 text-[17px] font-semibold">Privacy policy (POPIA)</Link>
         <Link href="/terms/" className="block py-4 text-[17px] font-semibold">Terms of use</Link>

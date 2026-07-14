@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAppState, getState } from "@/lib/store";
 import { computeReadiness, readinessLabel } from "@/lib/readiness";
+import { isEntitled, questionsLeftToday, FREE_DAILY_QUESTIONS } from "@/lib/premium";
 import { EXAM_TOTAL } from "@/data/topics";
 
 export default function Home() {
@@ -120,6 +121,18 @@ export default function Home() {
           <span className="ml-auto text-muted">→</span>
         </Link>
       </div>
+
+      {/* Free plan status */}
+      {!isEntitled(state) && (
+        <div className="px-6 pt-4">
+          <Link href="/upgrade/" className="flex items-center justify-between rounded-tile bg-soft px-4 py-3">
+            <span className="text-[13px] font-semibold">
+              Free plan · {questionsLeftToday(state)}/{FREE_DAILY_QUESTIONS} questions left today
+            </span>
+            <span className="text-[13px] font-bold text-accent">Unlock →</span>
+          </Link>
+        </div>
+      )}
 
       {/* Recent mock footer */}
       {lastMock && (

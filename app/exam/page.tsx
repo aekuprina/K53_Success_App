@@ -6,6 +6,7 @@ import { buildMockExam, scoreMock, ShuffledQuestion, MockOutcome } from "@/lib/q
 import { addMockResult, recordAnswer, useAppState } from "@/lib/store";
 import { getTr } from "@/lib/i18n";
 import { useHideNav } from "@/lib/ui";
+import { canStartMock, isEntitled } from "@/lib/premium";
 import { BLOCK_META, EXAM_MINUTES, EXAM_TOTAL } from "@/data/topics";
 
 type Phase = "intro" | "running" | "results";
@@ -37,7 +38,8 @@ export default function MockExam() {
     if (timerRef.current) clearInterval(timerRef.current);
     const out = scoreMock(builtItems, finalAnswers);
     builtItems.forEach((item, idx) => {
-      if (finalAnswers[idx] !== null) recordAnswer(item.q.id, finalAnswers[idx] === item.answerIndex);
+      // Mock answers feed stats but never eat the free daily practice limit
+      if (finalAnswers[idx] !== null) recordAnswer(item.q.id, finalAnswers[idx] === item.answerIndex, { countUsage: false });
     });
     addMockResult({ date: Date.now(), rules: out.rules, signs: out.signs, controls: out.controls, passed: out.passed, percent: out.percent });
     setOutcome(out);
@@ -58,6 +60,26 @@ export default function MockExam() {
   }, [secondsLeft, phase]);
 
   const answeredCount = useMemo(() => answers.filter((a) => a !== null).length, [answers]);
+
+  if (phase === "intro" && !canStartMock(appState)) {
+    return (
+      <div className="animate-screenIn px-6 pt-4">
+        <Link href="/" className="text-[15px] font-bold text-accent">← Home</Link>
+        <h1 className="h-display mt-3.5 text-[30px] leading-[1.05]">Mock exam</h1>
+        <div className="mt-5 rounded-[24px] bg-hero p-6 text-heroink">
+          <div className="text-[10.5px] font-bold uppercase tracking-[0.16em] text-accent">Free mock used</div>
+          <div className="mt-3 text-[22px] font-bold leading-snug">The real test takes practice runs — most people need 3–5 mocks to pass.</div>
+          <p className="mt-3 text-[13px] font-medium leading-relaxed text-heromut">
+            Your free mock is done{appState.mocks.length > 0 ? ` (${appState.mocks[appState.mocks.length - 1].percent}%)` : ""}. Unlock unlimited mocks and train the CLLT format until it feels easy.
+          </p>
+          <Link href="/upgrade/?reason=mock" className="btn-primary mt-5 w-full text-[16px]">
+            Unlock unlimited mocks <span className="ml-2 font-display">→</span>
+          </Link>
+        </div>
+        <Link href="/practice/" className="btn-ghost mt-4 w-full">Keep practising topics</Link>
+      </div>
+    );
+  }
 
   if (phase === "intro") {
     return (
@@ -173,10 +195,16 @@ export default function MockExam() {
           {wrong.length > 0 ? (
             <>
               <Link href="/mistakes/" className="btn-primary text-[17px]">Practise my {wrong.length} mistakes</Link>
-              <button className="btn-ghost" onClick={start}>Try another mock</button>
+              {isEntitled(appState) ? (
+                <button className="btn-ghost" onClick={start}>Try another mock</button>
+              ) : (
+                <Link href="/upgrade/?reason=mock" className="btn-ghost">Unlock unlimited mocks</Link>
+              )}
             </>
-          ) : (
+          ) : isEntitled(appState) ? (
             <button className="btn-primary text-[17px]" onClick={start}>Try another mock</button>
+          ) : (
+            <Link href="/upgrade/?reason=mock" className="btn-primary text-[17px]">Unlock unlimited mocks</Link>
           )}
         </div>
         </div>

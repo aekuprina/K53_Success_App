@@ -18,12 +18,21 @@ export interface MockResult {
   percent: number;
 }
 
+export type Entitlement = "free" | "unlock" | "pass";
+
 export interface AppState {
   onboarded: boolean;
   code: "1" | "8" | "10";
   examDate?: string;
   dark: boolean;
   lang: "en" | "af" | "zu" | "xh";
+  /** Purchase level. Synced with the store billing (RevenueCat) in native builds. */
+  entitlement: Entitlement;
+  voucher?: string;
+  /** Free-plan usage tracking */
+  usageDay: string; // YYYY-MM-DD
+  usageCount: number; // practice questions answered today
+  mocksUsed: number; // completed mock exams (free plan allows 1)
   stats: Record<string, QStat>;
   /** Per-sign recognition stats from the signs drill (keyed by sign id) */
   signStats: Record<string, QStat>;
@@ -39,6 +48,10 @@ const DEFAULT_STATE: AppState = {
   code: "8",
   dark: false,
   lang: "en",
+  entitlement: "free",
+  usageDay: "",
+  usageCount: 0,
+  mocksUsed: 0,
   stats: {},
   signStats: {},
   mistakes: [],
@@ -90,7 +103,11 @@ export function resetState() {
   listeners.forEach((l) => l());
 }
 
-export function recordAnswer(qid: string, correct: boolean) {
+export function todayKey(): string {
+  return new Date().toISOString().slice(0, 10);
+}
+
+export function recordAnswer(qid: string, correct: boolean, opts?: { countUsage?: boolean }) {
   const s = load();
   const prev = s.stats[qid] ?? { a: 0, c: 0, streak: 0, last: 0 };
   const next: QStat = {
@@ -102,7 +119,20 @@ export function recordAnswer(qid: string, correct: boolean) {
   let mistakes = s.mistakes;
   if (!correct && !mistakes.includes(qid)) mistakes = [...mistakes, qid];
   if (correct && next.streak >= 2 && mistakes.includes(qid)) mistakes = mistakes.filter((m) => m !== qid);
-  setState({ stats: { ...s.stats, [qid]: next }, mistakes });
+
+  const countUsage = opts?.countUsage !== false;
+  const day = todayKey();
+  const usagePatch = countUsage
+    ? s.usageDay === day
+      ? { usageCount: s.usageCount + 1 }
+      : { usageDay: day, usageCount: 1 }
+    : {};
+
+  setState({ stats: { ...s.stats, [qid]: next }, mistakes, ...usagePatch });
+}
+
+export function setEntitlement(entitlement: Entitlement, voucher?: string) {
+  setState({ entitlement, voucher });
 }
 
 export function recordSignAnswer(signId: string, correct: boolean) {
@@ -127,7 +157,7 @@ export function toggleBookmark(qid: string) {
 
 export function addMockResult(r: MockResult) {
   const s = load();
-  setState({ mocks: [...s.mocks, r].slice(-20) });
+  setState({ mocks: [...s.mocks, r].slice(-20), mocksUsed: s.mocksUsed + 1 });
 }
 
 function subscribe(cb: () => void) {

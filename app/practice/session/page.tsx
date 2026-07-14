@@ -4,23 +4,31 @@ import { Suspense, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { buildPracticeSession } from "@/lib/quiz";
-import { getState } from "@/lib/store";
+import { getState, useAppState } from "@/lib/store";
 import { topicById } from "@/data/topics";
 import { QuizRunner } from "@/components/QuizRunner";
+import { LimitReached } from "@/components/LimitReached";
+import { questionsLeftToday } from "@/lib/premium";
 
 function SessionInner() {
   const params = useSearchParams();
   const router = useRouter();
+  const appState = useAppState();
   const topic = params.get("topic") ?? "rules-road";
   const [done, setDone] = useState<number | null>(null);
   const [runId, setRunId] = useState(0);
 
+  const left = questionsLeftToday(appState);
   const items = useMemo(
-    () => buildPracticeSession(topic, getState(), 12),
+    () => buildPracticeSession(topic, getState(), Math.min(12, Math.max(questionsLeftToday(getState()), 0)) || 12),
     [topic, runId]
   );
 
   const t = topicById(topic);
+
+  if (done === null && left <= 0) {
+    return <LimitReached />;
+  }
 
   if (done !== null) {
     const pct = Math.round((done / items.length) * 100);
